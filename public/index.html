@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Interaction & Error</title>
+</head>
+
+<body>
+    <h1>Mono WebSocket Example</h1>
+
+    <!-- Input field for user input -->
+    <input id="inputField" type="text" placeholder="Type something..." />
+    <!-- Submit Button -->
+    <button onclick="submitInteraction()"><b>Submit</b></button>
+    <!-- Toggle Error Button -->
+    <button onclick="toggleError()"><b>Toggle Error</b></button>
+
+    <script>
+        // Initialize WebSocket connection
+        const socket = new WebSocket(
+            location.protocol === 'https:' ? `wss://${location.host}:${location.port}` : `ws://${location.hostname}:${location.port}`
+        );
+
+        // Handle WebSocket open connection
+        socket.onopen = () => {
+            console.log('WebSocket connected');
+        };
+
+        // Handle messages from the server
+        socket.onmessage = (event) => {
+            console.log('Message from server:', event.data);
+        };
+
+        // Function to handle the submit button click
+        function submitInteraction() {
+            const inputField = document.getElementById('inputField').value;
+            if (inputField) {
+                socket.send(JSON.stringify({
+                    type: "event.interaction",
+                    data: inputField
+                }));
+            }
+        }
+
+        // Function to handle the toggle error button click
+        function toggleError() {
+            const uniqueErrorString = 'error_' + Math.random().toString(36).substr(2, 9);
+            socket.send(JSON.stringify({
+                type: "event.error",
+                data: uniqueErrorString
+            }));
+        }
+    </script>
+</body>
+
+</html>
